@@ -72,12 +72,12 @@ class SensorsListener(
         mSensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         if (mAccSensor == null) {
-            Log.e(TAG, "onCreate: Accelerometer sensor is not supported!")
+            Log.w(TAG, "Accelerometer sensor is not supported!")
         }
 
         mGyroSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         if (mGyroSensor == null) {
-            Log.e(TAG, "onCreate: Gyroscope sensor is not supported!")
+            Log.w(TAG, "Gyroscope sensor is not supported!")
         }
     }
 
@@ -111,6 +111,7 @@ class SensorsListener(
                 )
             }
         }
+        Log.d(TAG, "startListening: start listening to sensors!")
     }
 
     /**
@@ -124,6 +125,7 @@ class SensorsListener(
     fun stopListening() {
         mIsListening = false
         mSensorManager.unregisterListener(this)
+        Log.d(TAG, "stopListening: stop listening to sensors!")
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -137,6 +139,6 @@ class SensorsListener(
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        Log.i(TAG, "onAccuracyChanged: Changed accuracy of sensor '${sensor?.name}' to $accuracy")
+        Log.i(TAG, "onAccuracyChanged: Changed accuracy of sensor '${sensor?.name}' to '$accuracy'")
     }
 }
