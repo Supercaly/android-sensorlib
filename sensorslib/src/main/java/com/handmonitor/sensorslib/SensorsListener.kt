@@ -128,10 +128,72 @@ class SensorsListener(
         Log.d(TAG, "stopListening: stop listening to sensors!")
     }
 
+    private var mLastAccTs: Long? = null
+    private var mLastGyroTs: Long? = null
+
+    private val minSamplingRange
+        get() = (mSamplingPeriodUs * 1_000) - 2_000_000
+    private val maxSamplingRange
+        get() = (mSamplingPeriodUs * 1_000) + 2_000_000
+
     override fun onSensorChanged(event: SensorEvent?) {
         when (event?.sensor?.type) {
-            Sensor.TYPE_ACCELEROMETER -> mSensorsData.putAcc(SensorSample.fromArray(event.values))
-            Sensor.TYPE_GYROSCOPE -> mSensorsData.putGyro(SensorSample.fromArray(event.values))
+            Sensor.TYPE_ACCELEROMETER -> {
+                // The first time mLastAccTs is null, we accept the sample no matter what
+                if (mLastAccTs == null) {
+                    mLastAccTs = event.timestamp
+                    mSensorsData.putAcc(SensorSample.fromArray(event.values))
+                } else {
+                    // Compute the elapsed time
+                    val elapsed = event.timestamp - mLastAccTs!!
+                    if (elapsed >= minSamplingRange) {
+                        // The elapsed time is >= than the minSamplingRange, so we accept it
+                        mLastAccTs = event.timestamp
+                        mSensorsData.putAcc(SensorSample.fromArray(event.values))
+                        if (elapsed > maxSamplingRange) {
+                            Log.d(
+                                TAG,
+                                "onSensorChanged: got a late accelerometer event '${elapsed}ns'"
+                            )
+                        }
+                    }
+                    // The elapsed time should not be negative... something strange happened
+                    if (elapsed < 0) {
+                        Log.wtf(
+                            TAG,
+                            "onSensorChanged: got an accelerometer event with negative elapsed time '${elapsed}ns'"
+                        )
+                    }
+                }
+            }
+            Sensor.TYPE_GYROSCOPE -> {
+                // The first time mLastGyroTs is null, we accept the sample no matter what
+                if (mLastGyroTs == null) {
+                    mLastGyroTs = event.timestamp
+                    mSensorsData.putGyro(SensorSample.fromArray(event.values))
+                } else {
+                    // Compute the elapsed time
+                    val elapsed = event.timestamp - mLastGyroTs!!
+                    if (elapsed >= minSamplingRange) {
+                        // The elapsed time is >= than the minSamplingRange, so we accept it
+                        mLastGyroTs = event.timestamp
+                        mSensorsData.putGyro(SensorSample.fromArray(event.values))
+                        if (elapsed > maxSamplingRange) {
+                            Log.d(
+                                TAG,
+                                "onSensorChanged: got a late gyroscope event '${elapsed}ns'"
+                            )
+                        }
+                    }
+                    // The elapsed time should not be negative... something strange happened
+                    if (elapsed < 0) {
+                        Log.wtf(
+                            TAG,
+                            "onSensorChanged: got an gyroscope event with negative elapsed time '${elapsed}ns'"
+                        )
+                    }
+                }
+            }
             else -> {
                 Log.w(TAG, "onSensorChanged: Unknown sensor type ${event?.sensor?.type}")
             }
