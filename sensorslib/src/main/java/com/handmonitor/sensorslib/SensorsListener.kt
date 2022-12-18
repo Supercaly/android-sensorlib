@@ -83,7 +83,6 @@ class SensorsListener(
     private val maxSamplingRange
         get() = (mSamplingPeriodUs * 1_000) + 2_000_000
 
-
     init {
         mSensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
