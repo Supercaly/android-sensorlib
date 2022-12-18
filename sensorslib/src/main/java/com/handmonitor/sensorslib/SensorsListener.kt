@@ -68,6 +68,22 @@ class SensorsListener(
     private var mGyroSensor: Sensor? = null
     private var mIsListening = false
 
+    private var mLastAccTs: Long? = null
+    private var mLastGyroTs: Long? = null
+
+    /**
+     * Minimum value for the sampling rate range in nanoseconds.
+     */
+    private val minSamplingRange
+        get() = (mSamplingPeriodUs * 1_000) - 2_000_000
+
+    /**
+     * Maximum value for the sampling rate range in nanoseconds.
+     */
+    private val maxSamplingRange
+        get() = (mSamplingPeriodUs * 1_000) + 2_000_000
+
+
     init {
         mSensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mAccSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -127,14 +143,6 @@ class SensorsListener(
         mSensorManager.unregisterListener(this)
         Log.d(TAG, "stopListening: stop listening to sensors!")
     }
-
-    private var mLastAccTs: Long? = null
-    private var mLastGyroTs: Long? = null
-
-    private val minSamplingRange
-        get() = (mSamplingPeriodUs * 1_000) - 2_000_000
-    private val maxSamplingRange
-        get() = (mSamplingPeriodUs * 1_000) + 2_000_000
 
     override fun onSensorChanged(event: SensorEvent?) {
         when (event?.sensor?.type) {

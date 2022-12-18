@@ -367,6 +367,7 @@ class SensorsListenerTest {
 
     // Inspired by this StackOverflow post
     // https://stackoverflow.com/questions/2806976/how-can-i-unit-test-an-android-activity-that-acts-on-accelerometer
+    // https://source.chromium.org/chromium/chromium/src/+/main:services/device/generic_sensor/android/junit/src/org/chromium/device/sensors/PlatformSensorAndProviderTest.java
     private fun mockSensorEvent(
         sensor: Sensor? = null,
         accuracy: Int = 0,
