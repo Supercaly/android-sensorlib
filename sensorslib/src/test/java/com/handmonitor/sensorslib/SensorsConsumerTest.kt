@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 @ExtendWith(MockKExtension::class)
 class SensorsConsumerTest {
     @MockK
-    private lateinit var mSensorsData: SensorsData
+    private lateinit var mData: SensorSharedData
 
     @BeforeEach
     fun setup() {
@@ -25,7 +25,7 @@ class SensorsConsumerTest {
     @Test
     fun `onNewData called when new data is ready`() {
         val mockData = floatArrayOf(0.0f, 1.1f, 2.2f, 3.3f)
-        every { mSensorsData.getData() } returns mockData
+        every { mData.getData() } returns mockData
 
         val impl = object : SensorsConsumer {
             override fun onNewData(data: FloatArray) {
@@ -33,11 +33,11 @@ class SensorsConsumerTest {
                 throw InterruptedException()
             }
         }
-        val runnable = SensorsConsumerRn(mSensorsData, impl)
+        val runnable = SensorsConsumerRn(mData, impl)
         runnable.run()
 
         verify {
-            mSensorsData.getData()
+            mData.getData()
         }
     }
 }

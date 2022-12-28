@@ -14,7 +14,7 @@ import android.util.Log
  *
  * This class listen periodically to samples produced by the
  * sensors in the Android device like accelerometer and gyroscope
- * in his own dedicated thread and pass them to a shared [SensorsData].
+ * in his own dedicated thread and pass them to a shared [SensorSharedData].
  *
  * The user must start and stop the separate thread by himself and then
  * create a [Handler] that will offload all the work. The internal Android
@@ -33,17 +33,17 @@ import android.util.Log
  * }
  * ```
  *
- * @property[mSensorsData] The values produced are passed to a shared [SensorsData].
+ * @property[mSensorSharedData] The values produced are passed to a shared [SensorSharedData].
  * @property[mHandler] The [Handler] for the separate [Thread].
  * @param[ctx] The application's [Context].
  * @param[windowDurationMs] The duration of the sampling window in milliseconds.
  * @param[samplingPeriodMs] The sampling period in milliseconds; this equals 1000/freq.
  * @constructor Crates an instance of [SensorsListener] with given [Context],
- * [SensorsData], [Handler], window duration and sampling period.
+ * [SensorSharedData], [Handler], window duration and sampling period.
  */
 class SensorsListener(
     ctx: Context,
-    private val mSensorsData: SensorsData,
+    private val mSensorSharedData: SensorSharedData,
     private val mHandler: Handler,
     windowDurationMs: Int,
     samplingPeriodMs: Int,
@@ -149,14 +149,14 @@ class SensorsListener(
                 // The first time mLastAccTs is null, we accept the sample no matter what
                 if (mLastAccTs == null) {
                     mLastAccTs = event.timestamp
-                    mSensorsData.putAcc(SensorSample.fromArray(event.values))
+                    mSensorSharedData.putAcc(SensorSample.fromArray(event.values))
                 } else {
                     // Compute the elapsed time
                     val elapsed = event.timestamp - mLastAccTs!!
                     if (elapsed >= minSamplingRange) {
                         // The elapsed time is >= than the minSamplingRange, so we accept it
                         mLastAccTs = event.timestamp
-                        mSensorsData.putAcc(SensorSample.fromArray(event.values))
+                        mSensorSharedData.putAcc(SensorSample.fromArray(event.values))
                         if (elapsed > maxSamplingRange) {
                             Log.d(
                                 TAG,
@@ -177,14 +177,14 @@ class SensorsListener(
                 // The first time mLastGyroTs is null, we accept the sample no matter what
                 if (mLastGyroTs == null) {
                     mLastGyroTs = event.timestamp
-                    mSensorsData.putGyro(SensorSample.fromArray(event.values))
+                    mSensorSharedData.putGyro(SensorSample.fromArray(event.values))
                 } else {
                     // Compute the elapsed time
                     val elapsed = event.timestamp - mLastGyroTs!!
                     if (elapsed >= minSamplingRange) {
                         // The elapsed time is >= than the minSamplingRange, so we accept it
                         mLastGyroTs = event.timestamp
-                        mSensorsData.putGyro(SensorSample.fromArray(event.values))
+                        mSensorSharedData.putGyro(SensorSample.fromArray(event.values))
                         if (elapsed > maxSamplingRange) {
                             Log.d(
                                 TAG,

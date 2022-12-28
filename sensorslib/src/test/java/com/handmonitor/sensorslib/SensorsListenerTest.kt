@@ -31,7 +31,7 @@ class SensorsListenerTest {
     private lateinit var mContext: Context
 
     @MockK(relaxed = true)
-    private lateinit var mSensorsData: SensorsData
+    private lateinit var mData: SensorSharedData
 
     @MockK
     private lateinit var mSensorManager: SensorManager
@@ -66,7 +66,7 @@ class SensorsListenerTest {
         every { mSensorManager.registerListener(any(), any(), any(), any(), any()) } returns true
 
         var listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mAcc, any(), any(), any())
@@ -75,7 +75,7 @@ class SensorsListenerTest {
 
         // Start listening with only accelerometer supported
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns null
-        listener = SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+        listener = SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mAcc, any(), any(), any())
@@ -83,7 +83,7 @@ class SensorsListenerTest {
 
         // Start listening with only gyroscope supported
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns null
-        listener = SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+        listener = SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mGyr, any(), any(), any())
@@ -97,7 +97,7 @@ class SensorsListenerTest {
         every { mSensorManager.registerListener(any(), any(), any(), any(), any()) } returns true
 
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mAcc, any(), any(), any())
@@ -118,7 +118,7 @@ class SensorsListenerTest {
         every { mSensorManager.unregisterListener(any<SensorEventListener>()) } just Runs
 
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         listener.stopListening()
         verify {
             mSensorManager.unregisterListener(any<SensorEventListener>())
@@ -133,7 +133,7 @@ class SensorsListenerTest {
         every { mSensorManager.unregisterListener(any<SensorEventListener>()) } just Runs
 
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
 
         listener.startListening()
         verify {
@@ -156,18 +156,18 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
 
         val accEvent = mockSensorEvent(mAcc)
         listener.onSensorChanged(accEvent)
         verify {
-            mSensorsData.putAcc(any())
+            mData.putAcc(any())
         }
 
         val gyrEvent = mockSensorEvent(mGyr)
         listener.onSensorChanged(gyrEvent)
         verify {
-            mSensorsData.putGyro(any())
+            mData.putGyro(any())
         }
     }
 
@@ -176,43 +176,43 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
         var accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify { mSensorsData.putAcc(any()) }
+        verify { mData.putAcc(any()) }
 
         // Accelerometer event faster than the sampling rate is discarded
         timestamp = TIMESTAMP_NS + 5_000_000
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(atMost = 1) { mSensorsData.putAcc(any()) }
+        verify(atMost = 1) { mData.putAcc(any()) }
 
         // Accelerometer event slightly faster than the sampling rate is discarded
         timestamp = TIMESTAMP_NS + ((SAMPLING_P_MS * MS_TO_NS) - (2 * MS_TO_NS) - 1)
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(atMost = 1) { mSensorsData.putAcc(any()) }
+        verify(atMost = 1) { mData.putAcc(any()) }
 
         // Send one gyroscope event to simulate the previous ones
         timestamp = TIMESTAMP_NS
         var gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify { mSensorsData.putGyro(any()) }
+        verify { mData.putGyro(any()) }
 
         // Gyroscope events faster than the sampling rate is discarded
         timestamp = TIMESTAMP_NS + 5_000_000
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(atMost = 1) { mSensorsData.putGyro(any()) }
+        verify(atMost = 1) { mData.putGyro(any()) }
 
         // Gyroscope event slightly faster than the sampling rate is discarded
         timestamp = TIMESTAMP_NS + ((SAMPLING_P_MS * MS_TO_NS) - (2 * MS_TO_NS) - 1)
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(atMost = 1) { mSensorsData.putGyro(any()) }
+        verify(atMost = 1) { mData.putGyro(any()) }
     }
 
     @Test
@@ -220,55 +220,55 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
         var accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify { mSensorsData.putAcc(any()) }
+        verify { mData.putAcc(any()) }
 
         // Accelerometer event on time is accepted
         timestamp = TIMESTAMP_NS + 20_000_000
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(exactly = 2) { mSensorsData.putAcc(any()) }
+        verify(exactly = 2) { mData.putAcc(any()) }
 
         // Accelerometer event in range is accepted
         timestamp += 20_000_000 + (2 * MS_TO_NS)
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(exactly = 3) { mSensorsData.putAcc(any()) }
+        verify(exactly = 3) { mData.putAcc(any()) }
 
         // Accelerometer event in range is accepted
         timestamp += 20_000_000 - (2 * MS_TO_NS)
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(exactly = 4) { mSensorsData.putAcc(any()) }
+        verify(exactly = 4) { mData.putAcc(any()) }
 
         // Send one gyroscope event to simulate the previous ones
         timestamp = TIMESTAMP_NS
         var gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify { mSensorsData.putGyro(any()) }
+        verify { mData.putGyro(any()) }
 
         // Accelerometer event on time is accepted
         timestamp = TIMESTAMP_NS + 20_000_000
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(exactly = 2) { mSensorsData.putGyro(any()) }
+        verify(exactly = 2) { mData.putGyro(any()) }
 
         // Accelerometer event in range is accepted
         timestamp += 20_000_000 + (2 * MS_TO_NS)
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(exactly = 3) { mSensorsData.putGyro(any()) }
+        verify(exactly = 3) { mData.putGyro(any()) }
 
         // Accelerometer event in range is accepted
         timestamp += 20_000_000 - (2 * MS_TO_NS)
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(exactly = 4) { mSensorsData.putGyro(any()) }
+        verify(exactly = 4) { mData.putGyro(any()) }
     }
 
     @Test
@@ -276,46 +276,46 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
         var accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify { mSensorsData.putAcc(any()) }
+        verify { mData.putAcc(any()) }
 
         // Accelerometer event late is accepted
         timestamp = TIMESTAMP_NS + 25_000_000
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(exactly = 2) { mSensorsData.putAcc(any()) }
+        verify(exactly = 2) { mData.putAcc(any()) }
         verify(exactly = 1) { Log.d(any(), any()) }
 
         // Accelerometer event slightly later than the sampling rate is accepted
         timestamp += (SAMPLING_P_MS * MS_TO_NS) + (2 * MS_TO_NS) + 1
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(exactly = 3) { mSensorsData.putAcc(any()) }
+        verify(exactly = 3) { mData.putAcc(any()) }
         verify(exactly = 2) { Log.d(any(), any()) }
 
         // Send one gyroscope event to simulate the previous ones
         timestamp = TIMESTAMP_NS
         var gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify { mSensorsData.putGyro(any()) }
+        verify { mData.putGyro(any()) }
 
         // Gyroscope event late is accepted
         timestamp = TIMESTAMP_NS + 25_000_000
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(exactly = 2) { mSensorsData.putGyro(any()) }
+        verify(exactly = 2) { mData.putGyro(any()) }
         verify(exactly = 3) { Log.d(any(), any()) }
 
         // Gyroscope event slightly later than the sampling rate is accepted
         timestamp += (SAMPLING_P_MS * MS_TO_NS) + (2 * MS_TO_NS) + 1
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(exactly = 3) { mSensorsData.putGyro(any()) }
+        verify(exactly = 3) { mData.putGyro(any()) }
         verify(exactly = 4) { Log.d(any(), any()) }
     }
 
@@ -324,44 +324,44 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mSensorsData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
         var accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify { mSensorsData.putAcc(any()) }
+        verify { mData.putAcc(any()) }
 
         // Accelerometer event at the same time than the last is discarded
         timestamp = TIMESTAMP_NS
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(atMost = 1) { mSensorsData.putAcc(any()) }
+        verify(atMost = 1) { mData.putAcc(any()) }
 
         // Accelerometer event at a time before the last is discarded
         timestamp = TIMESTAMP_NS - 5_000_000
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
-        verify(atMost = 1) { mSensorsData.putAcc(any()) }
+        verify(atMost = 1) { mData.putAcc(any()) }
         verify(exactly = 1) { Log.wtf(any(), any<String>()) }
 
         // Send one gyroscope event to simulate the previous ones
         timestamp = TIMESTAMP_NS
         var gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify { mSensorsData.putGyro(any()) }
+        verify { mData.putGyro(any()) }
 
         // Gyroscope event at the same time than the last is discarded
         timestamp = TIMESTAMP_NS
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(atMost = 1) { mSensorsData.putGyro(any()) }
+        verify(atMost = 1) { mData.putGyro(any()) }
 
         // Gyroscope event at a time before the last is discarded
         timestamp = TIMESTAMP_NS - 5_000_000
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
-        verify(atMost = 1) { mSensorsData.putGyro(any()) }
+        verify(atMost = 1) { mData.putGyro(any()) }
         verify(exactly = 2) { Log.wtf(any(), any<String>()) }
     }
 

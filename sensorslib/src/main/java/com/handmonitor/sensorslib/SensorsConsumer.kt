@@ -6,7 +6,7 @@ import android.util.Log
  * The [SensorsConsumer] interface should be implemented by any class
  * that want to do something with the data received from the sensors.
  *
- * @see[SensorsData]
+ * @see[SensorSharedData]
  * @see[SensorsConsumerRn]
  * @see[SensorsListener]
  */
@@ -24,7 +24,7 @@ interface SensorsConsumer {
 /**
  * A consumer of sensors values in a dedicated thread.
  *
- * This class waits for [SensorsData] to produce a full list of
+ * This class waits for [SensorSharedData] to produce a full list of
  * sensors values and then calls [SensorsConsumer] interface with it. All the work
  * is done in a dedicated thread that the user needs to spawn.
  *
@@ -46,12 +46,12 @@ interface SensorsConsumer {
  * t.interrupt()
  * ```
  *
- * @property[mData] A shared [SensorsData] that contains the values needed.
+ * @property[mData] A shared [SensorSharedData] that contains the values needed.
  * @property[mConsumer] A class that implements [SensorsConsumer] to do something with the
  * collected data.
  */
 class SensorsConsumerRn(
-    private val mData: SensorsData,
+    private val mData: SensorSharedData,
     private val mConsumer: SensorsConsumer
 ) : Runnable {
     companion object {
