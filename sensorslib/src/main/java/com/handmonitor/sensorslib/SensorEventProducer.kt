@@ -10,13 +10,13 @@ import android.os.HandlerThread
 import android.util.Log
 
 /**
- * A listener for sensors values in a dedicate thread.
+ * A producer for sensors values in a dedicate thread.
  *
  * This class listen periodically to samples produced by the
- * sensors in the Android device like accelerometer and gyroscope
+ * sensors of the Android device like accelerometer and gyroscope
  * in his own dedicated thread and pass them to a shared [SensorSharedData].
  *
- * The user must start and stop the separate thread by himself and then
+ * To use this class the user must start and stop the separate thread then
  * create a [Handler] that will offload all the work. The internal Android
  * [SensorEventListener] will post a new message for each senor event so it's
  * suggested to use a [HandlerThread] for automatically manage those works.
@@ -24,43 +24,38 @@ import android.util.Log
  * Example usage:
  * ```
  * // Create the HandlerThread and start it
- * val thread = HandlerThread(SensorsListener.threadName).apply {
+ * val thread = HandlerThread("threadName").apply {
  *      start()
  *      // Create the handler
  *      val handler = Handler(thread.looper)
  *      // Create the listener
- *      listener = SensorsListener(context, data, handler)
+ *      listener = SensorEventProducer(context, data, handler, WINDOW_SIZE, SAMPLING_PERIOD)
  * }
  * ```
  *
  * @property[mSensorSharedData] The values produced are passed to a shared [SensorSharedData].
  * @property[mHandler] The [Handler] for the separate [Thread].
  * @param[ctx] The application's [Context].
- * @param[windowDurationMs] The duration of the sampling window in milliseconds.
+ * @param[samplingWindowSize] The size of the sampling window.
  * @param[samplingPeriodMs] The sampling period in milliseconds; this equals 1000/freq.
- * @constructor Crates an instance of [SensorsListener] with given [Context],
- * [SensorSharedData], [Handler], window duration and sampling period.
+ * @constructor Crates an instance of [SensorEventProducer] with given [Context],
+ * [SensorSharedData], [Handler], window size and sampling period.
  */
-class SensorsListener(
+class SensorEventProducer(
     ctx: Context,
     private val mSensorSharedData: SensorSharedData,
     private val mHandler: Handler,
-    windowDurationMs: Int,
+    samplingWindowSize: Int,
     samplingPeriodMs: Int,
 ) : SensorEventListener {
     companion object {
-        /**
-         * Name of the thread that should be used to manage [SensorsListener].
-         *
-         * @see [SensorsListener]
-         */
-        const val threadName = "SensorsListenerThread"
-        private const val TAG = "SensorsListener"
+        private const val TAG = "SensorEventProducer"
+        private const val SAMPLING_RANGE = 2_000_000
     }
 
     // Constants obtained from configuration converted to microseconds
-    private val mMaxLatencyUS = windowDurationMs * 1_000
     private val mSamplingPeriodUs = samplingPeriodMs * 1_000
+    private val mMaxLatencyUS = mSamplingPeriodUs * samplingWindowSize
 
     // Sensor manager and sensors
     private val mSensorManager: SensorManager
@@ -75,13 +70,13 @@ class SensorsListener(
      * Minimum value for the sampling rate range in nanoseconds.
      */
     private val minSamplingRange
-        get() = (mSamplingPeriodUs * 1_000) - 2_000_000
+        get() = (mSamplingPeriodUs * 1_000) - SAMPLING_RANGE
 
     /**
      * Maximum value for the sampling rate range in nanoseconds.
      */
     private val maxSamplingRange
-        get() = (mSamplingPeriodUs * 1_000) + 2_000_000
+        get() = (mSamplingPeriodUs * 1_000) + SAMPLING_RANGE
 
     init {
         mSensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -126,6 +121,10 @@ class SensorsListener(
                 )
             }
         }
+        // FIXME: Move this log message inside the if body above
+        //  This message logs the fact that we are listening to sensors, in this place
+        //  we could not be listening to them, so it's appropriate to move them in a place
+        //  where we are not laying.
         Log.d(TAG, "startListening: start listening to sensors!")
     }
 

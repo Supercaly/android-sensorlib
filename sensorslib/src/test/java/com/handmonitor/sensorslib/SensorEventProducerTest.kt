@@ -12,18 +12,18 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
-import io.mockk.mockkStatic
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
-class SensorsListenerTest {
+class SensorEventProducerTest {
     companion object {
-        private const val WINDOW_DUR_MS = 2_000
+        private const val WINDOW_SIZE = 100
         private const val SAMPLING_P_MS = 20
         private const val TIMESTAMP_NS = 314159265358979000L
+        // TODO: Replace with the use of SensorEventProducer's SAMPLING_RANGE
         private const val MS_TO_NS = 1_000_000
     }
 
@@ -47,11 +47,7 @@ class SensorsListenerTest {
 
     @BeforeEach
     fun setup() {
-        mockkStatic(Log::class)
-        every { Log.d(any(), any()) } returns 0
-        every { Log.i(any(), any()) } returns 0
-        every { Log.w(any(), any<String>()) } returns 0
-        every { Log.wtf(any(), any<String>()) } returns 0
+        mockLog()
         every { mContext.getSystemService(Context.SENSOR_SERVICE) } returns mSensorManager
 
         every { mAcc.type } returns Sensor.TYPE_ACCELEROMETER
@@ -66,7 +62,7 @@ class SensorsListenerTest {
         every { mSensorManager.registerListener(any(), any(), any(), any(), any()) } returns true
 
         var listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mAcc, any(), any(), any())
@@ -75,7 +71,7 @@ class SensorsListenerTest {
 
         // Start listening with only accelerometer supported
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns null
-        listener = SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+        listener = SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mAcc, any(), any(), any())
@@ -83,7 +79,7 @@ class SensorsListenerTest {
 
         // Start listening with only gyroscope supported
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns null
-        listener = SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+        listener = SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mGyr, any(), any(), any())
@@ -97,7 +93,7 @@ class SensorsListenerTest {
         every { mSensorManager.registerListener(any(), any(), any(), any(), any()) } returns true
 
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         listener.startListening()
         verify {
             mSensorManager.registerListener(any(), mAcc, any(), any(), any())
@@ -118,7 +114,7 @@ class SensorsListenerTest {
         every { mSensorManager.unregisterListener(any<SensorEventListener>()) } just Runs
 
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         listener.stopListening()
         verify {
             mSensorManager.unregisterListener(any<SensorEventListener>())
@@ -133,7 +129,7 @@ class SensorsListenerTest {
         every { mSensorManager.unregisterListener(any<SensorEventListener>()) } just Runs
 
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
 
         listener.startListening()
         verify {
@@ -156,7 +152,7 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
 
         val accEvent = mockSensorEvent(mAcc)
         listener.onSensorChanged(accEvent)
@@ -176,7 +172,7 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
@@ -220,7 +216,7 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
@@ -276,7 +272,7 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
@@ -324,7 +320,7 @@ class SensorsListenerTest {
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns mAcc
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) } returns mGyr
         val listener =
-            SensorsListener(mContext, mData, mHandler, WINDOW_DUR_MS, SAMPLING_P_MS)
+            SensorEventProducer(mContext, mData, mHandler, WINDOW_SIZE, SAMPLING_P_MS)
         var timestamp = TIMESTAMP_NS
 
         // Send one accelerometer event to simulate the previous ones
@@ -368,6 +364,7 @@ class SensorsListenerTest {
     // Inspired by this StackOverflow post
     // https://stackoverflow.com/questions/2806976/how-can-i-unit-test-an-android-activity-that-acts-on-accelerometer
     // https://source.chromium.org/chromium/chromium/src/+/main:services/device/generic_sensor/android/junit/src/org/chromium/device/sensors/PlatformSensorAndProviderTest.java
+    // TODO: Move inside the Mocks file
     private fun mockSensorEvent(
         sensor: Sensor? = null,
         accuracy: Int = 0,

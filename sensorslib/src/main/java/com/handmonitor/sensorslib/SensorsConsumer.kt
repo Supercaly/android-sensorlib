@@ -8,7 +8,7 @@ import android.util.Log
  *
  * @see[SensorSharedData]
  * @see[SensorsConsumerRn]
- * @see[SensorsListener]
+ * @see[SensorEventProducer]
  */
 interface SensorsConsumer {
     /**
