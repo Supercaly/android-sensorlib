@@ -49,8 +49,8 @@ class SensorEventProducer(
     samplingPeriodMs: Int,
 ) : SensorEventListener {
     companion object {
+        const val SAMPLING_RANGE = 2_000_000
         private const val TAG = "SensorEventProducer"
-        private const val SAMPLING_RANGE = 2_000_000
     }
 
     // Constants obtained from configuration converted to microseconds

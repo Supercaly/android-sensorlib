@@ -43,7 +43,6 @@ fun mockLog() {
     }
 }
 
-
 /**
  * Function that helps create a mock for Android's native [SensorEvent] class.
  * This class is internal to the Android's SDK and can be mocked only using reflection.

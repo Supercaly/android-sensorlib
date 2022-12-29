@@ -22,8 +22,6 @@ class SensorEventProducerTest {
         private const val WINDOW_SIZE = 100
         private const val SAMPLING_P_MS = 20
         private const val TIMESTAMP_NS = 314159265358979000L
-        // TODO: Replace with the use of SensorEventProducer's SAMPLING_RANGE
-        private const val MS_TO_NS = 1_000_000
     }
 
     @MockK
@@ -186,7 +184,8 @@ class SensorEventProducerTest {
         verify(atMost = 1) { mData.putAcc(any()) }
 
         // Accelerometer event slightly faster than the sampling rate is discarded
-        timestamp = TIMESTAMP_NS + ((SAMPLING_P_MS * MS_TO_NS) - (2 * MS_TO_NS) - 1)
+        timestamp =
+            TIMESTAMP_NS + ((SAMPLING_P_MS * 1_000_000) - SensorEventProducer.SAMPLING_RANGE - 1)
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
         verify(atMost = 1) { mData.putAcc(any()) }
@@ -204,7 +203,8 @@ class SensorEventProducerTest {
         verify(atMost = 1) { mData.putGyro(any()) }
 
         // Gyroscope event slightly faster than the sampling rate is discarded
-        timestamp = TIMESTAMP_NS + ((SAMPLING_P_MS * MS_TO_NS) - (2 * MS_TO_NS) - 1)
+        timestamp =
+            TIMESTAMP_NS + ((SAMPLING_P_MS * 1_000_000) - SensorEventProducer.SAMPLING_RANGE - 1)
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
         verify(atMost = 1) { mData.putGyro(any()) }
@@ -230,13 +230,13 @@ class SensorEventProducerTest {
         verify(exactly = 2) { mData.putAcc(any()) }
 
         // Accelerometer event in range is accepted
-        timestamp += 20_000_000 + (2 * MS_TO_NS)
+        timestamp += 20_000_000 + SensorEventProducer.SAMPLING_RANGE
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
         verify(exactly = 3) { mData.putAcc(any()) }
 
         // Accelerometer event in range is accepted
-        timestamp += 20_000_000 - (2 * MS_TO_NS)
+        timestamp += 20_000_000 - SensorEventProducer.SAMPLING_RANGE
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
         verify(exactly = 4) { mData.putAcc(any()) }
@@ -254,13 +254,13 @@ class SensorEventProducerTest {
         verify(exactly = 2) { mData.putGyro(any()) }
 
         // Accelerometer event in range is accepted
-        timestamp += 20_000_000 + (2 * MS_TO_NS)
+        timestamp += 20_000_000 + SensorEventProducer.SAMPLING_RANGE
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
         verify(exactly = 3) { mData.putGyro(any()) }
 
         // Accelerometer event in range is accepted
-        timestamp += 20_000_000 - (2 * MS_TO_NS)
+        timestamp += 20_000_000 - SensorEventProducer.SAMPLING_RANGE
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
         verify(exactly = 4) { mData.putGyro(any()) }
@@ -287,7 +287,7 @@ class SensorEventProducerTest {
         verify(exactly = 1) { Log.d(any(), any()) }
 
         // Accelerometer event slightly later than the sampling rate is accepted
-        timestamp += (SAMPLING_P_MS * MS_TO_NS) + (2 * MS_TO_NS) + 1
+        timestamp += (SAMPLING_P_MS * 1_000_000) + SensorEventProducer.SAMPLING_RANGE + 1
         accEvent = mockSensorEvent(mAcc, timestamp = timestamp)
         listener.onSensorChanged(accEvent)
         verify(exactly = 3) { mData.putAcc(any()) }
@@ -307,7 +307,7 @@ class SensorEventProducerTest {
         verify(exactly = 3) { Log.d(any(), any()) }
 
         // Gyroscope event slightly later than the sampling rate is accepted
-        timestamp += (SAMPLING_P_MS * MS_TO_NS) + (2 * MS_TO_NS) + 1
+        timestamp += (SAMPLING_P_MS * 1_000_000) + SensorEventProducer.SAMPLING_RANGE + 1
         gyroEvent = mockSensorEvent(mGyr, timestamp = timestamp)
         listener.onSensorChanged(gyroEvent)
         verify(exactly = 3) { mData.putGyro(any()) }
