@@ -2,7 +2,6 @@ package com.handmonitor.sensorslib
 
 import android.content.Context
 import android.hardware.Sensor
-import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Handler
@@ -359,30 +358,5 @@ class SensorEventProducerTest {
         listener.onSensorChanged(gyroEvent)
         verify(atMost = 1) { mData.putGyro(any()) }
         verify(exactly = 2) { Log.wtf(any(), any<String>()) }
-    }
-
-    // Inspired by this StackOverflow post
-    // https://stackoverflow.com/questions/2806976/how-can-i-unit-test-an-android-activity-that-acts-on-accelerometer
-    // https://source.chromium.org/chromium/chromium/src/+/main:services/device/generic_sensor/android/junit/src/org/chromium/device/sensors/PlatformSensorAndProviderTest.java
-    // TODO: Move inside the Mocks file
-    private fun mockSensorEvent(
-        sensor: Sensor? = null,
-        accuracy: Int = 0,
-        timestamp: Long = 0L,
-        values: FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f)
-    ): SensorEvent {
-        val eventConstructor = SensorEvent::class.java.getDeclaredConstructor()
-        eventConstructor.isAccessible = true
-        val sensorEvent = eventConstructor.newInstance()
-
-        sensorEvent.sensor = sensor
-        sensorEvent.accuracy = accuracy
-        sensorEvent.timestamp = timestamp
-
-        val valuesField = sensorEvent.javaClass.getField("values")
-        valuesField.isAccessible = true
-        valuesField.set(sensorEvent, values)
-
-        return sensorEvent
     }
 }
