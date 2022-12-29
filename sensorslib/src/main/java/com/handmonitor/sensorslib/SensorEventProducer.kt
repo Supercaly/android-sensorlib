@@ -120,12 +120,8 @@ class SensorEventProducer(
                     mHandler
                 )
             }
+            Log.d(TAG, "startListening: start listening to sensors!")
         }
-        // FIXME: Move this log message inside the if body above
-        //  This message logs the fact that we are listening to sensors, in this place
-        //  we could not be listening to them, so it's appropriate to move them in a place
-        //  where we are not laying.
-        Log.d(TAG, "startListening: start listening to sensors!")
     }
 
     /**
