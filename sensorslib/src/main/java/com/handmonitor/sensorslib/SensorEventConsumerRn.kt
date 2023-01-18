@@ -45,9 +45,9 @@ class SensorEventConsumerRn(
                 // Get the new data and pass it to SensorsConsumer implementation
                 mHandler.onNewData(mData.getData())
             } catch (ie: InterruptedException) {
-                Log.d(TAG, "run: ${Thread.currentThread().name} stopped!")
                 Thread.currentThread().interrupt()
             }
         }
+        Log.d(TAG, "run: ${Thread.currentThread().name} stopped!")
     }
 }
