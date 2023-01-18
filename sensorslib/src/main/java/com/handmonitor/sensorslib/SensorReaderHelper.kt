@@ -102,6 +102,7 @@ class SensorReaderHelper(
         mListener?.stopListening()
         mListenerThread?.quit()
         mConsumerThread?.interrupt()
+        mConsumerThread?.join()
 
         mListener = null
         mListenerThread = null
