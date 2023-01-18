@@ -7,7 +7,11 @@ import java.util.concurrent.locks.ReentrantLock
  * Represents a single sample of data obtained from a sensor.
  *
  * This type of data is a [Triple] of [Float]s values representing
- * the sensors' x, y, z values.
+ * the sensors' x, y, z axes values.
+ *
+ * @property[x] Value of the X axis
+ * @property[y] Value of the Y axis
+ * @property[z] Value of the Z axis
  */
 data class SensorSample(
     val x: Float,
@@ -25,23 +29,24 @@ data class SensorSample(
  *
  * This class represents a memory object shared between two threads,
  * one produces real-time values from the device sensors, and
- * the other that consumes them.
+ * the other consumes them.
  *
  * This class implements a sort of producer-consumer pattern, but the
- * data is produced continuously and it's consumed in windows given size.
+ * data is produced continuously and it's consumed in windows of given size.
  *
  * @param[samplingWindowSize] Size of the sampling window.
- * @constructor Create a new instance of [SensorsData] passing a sampling
+ * @constructor Create a new instance of [SensorSharedData] passing a sampling
  * window size usually equals to (sampling_freq * window_size_in_sec)
  */
-class SensorsData(samplingWindowSize: Int) {
+class SensorSharedData(samplingWindowSize: Int) {
     // Semaphores and locks for thread synchronization
     private val mProducerLock: ReentrantLock = ReentrantLock()
     private val mProducerSemaphore: Semaphore = Semaphore(0)
     private val mConsumerSemaphore: Semaphore = Semaphore(0)
 
     // Internal data arrays and indexes
-    private val mSensorsDataImpl: SensorsDataImpl = SensorsDataImpl(samplingWindowSize)
+    private val mSensorSharedDataImpl: SensorSharedDataImpl =
+        SensorSharedDataImpl(samplingWindowSize)
 
     /**
      * Adds a new accelerometer's [SensorSample] to the window.
@@ -51,7 +56,7 @@ class SensorsData(samplingWindowSize: Int) {
      */
     fun putAcc(acc: SensorSample) {
         mProducerLock.lock()
-        val full = mSensorsDataImpl.appendAcc(acc)
+        val full = mSensorSharedDataImpl.appendAcc(acc)
         if (full) {
             // Notify the consumer that the data is ready
             mConsumerSemaphore.release()
@@ -69,7 +74,7 @@ class SensorsData(samplingWindowSize: Int) {
      */
     fun putGyro(gyro: SensorSample) {
         mProducerLock.lock()
-        val full = mSensorsDataImpl.appendGyro(gyro)
+        val full = mSensorSharedDataImpl.appendGyro(gyro)
         if (full) {
             // Notify the consumer that the data is ready
             mConsumerSemaphore.release()
@@ -92,7 +97,7 @@ class SensorsData(samplingWindowSize: Int) {
         // Wait for all data to be produced
         mConsumerSemaphore.acquire()
         // Copy data to a thread-safe buffer
-        val buffer = mSensorsDataImpl.window.clone()
+        val buffer = mSensorSharedDataImpl.window.clone()
         // Notify producer that we are done copying
         mProducerSemaphore.release()
         return buffer
@@ -107,10 +112,10 @@ class SensorsData(samplingWindowSize: Int) {
  *
  * @param[samplingWindowSize] Size of the sampling window; this parameter is used
  * to determine the window length.
- * @constructor Create a new instance of [SensorsDataImpl] passing a sampling
+ * @constructor Create a new instance of [SensorSharedDataImpl] passing a sampling
  * window size usually equals to (sampling_freq * window_size_in_sec)
  */
-internal class SensorsDataImpl(samplingWindowSize: Int) {
+internal class SensorSharedDataImpl(samplingWindowSize: Int) {
     // The window length equals the samplingWindowSize * 6 channels for acc/gyro
     private val mWindowLength: Int = samplingWindowSize * 6
     private val mWindowData: FloatArray = FloatArray(mWindowLength) { 0.0f }
