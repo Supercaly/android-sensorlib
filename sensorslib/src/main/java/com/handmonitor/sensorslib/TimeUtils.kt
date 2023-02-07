@@ -7,7 +7,7 @@ package com.handmonitor.sensorslib
  * @receiver A [Long] time in milliseconds.
  * @return A [Long] time in nanoseconds.
  */
-fun Long.msToNs() = this * 1_000_000L
+fun Long.msToNs(): Long = this * 1_000_000L
 
 /**
  * Extension function that converts a time in
@@ -15,4 +15,4 @@ fun Long.msToNs() = this * 1_000_000L
  * @receiver A [Long] time in milliseconds.
  * @return A [Long] time in microseconds.
  */
-fun Long.msToUs() = this * 1_000
+fun Long.msToUs(): Long = this * 1_000

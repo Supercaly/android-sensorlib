@@ -69,6 +69,33 @@ class SensorWindowProducerTest {
     }
 
     @Test
+    fun `setOnNewWindowListener sets a new listener`() {
+        mockkConstructor(SensorSampleFilter::class)
+        mockkConstructor(SensorWindowBuffer::class)
+        every { anyConstructed<SensorSampleFilter>().newSample(any()) } returns true
+        every { anyConstructed<SensorWindowBuffer>().pushAccelerometer(any()) } returns true
+        every { anyConstructed<SensorWindowBuffer>().pushGyroscope(any()) } returns true
+
+        val producer = SensorWindowProducer(
+            mContext,
+            mHandlerThread,
+            samplingMs, windowSize
+        )
+        val accEvent = mockSensorEvent(mAccSensor)
+        producer.onSensorChanged(accEvent)
+        verify(inverse = true) { mOnNewWindow(any()) }
+
+        producer.setOnNewWindowListener(mOnNewWindow)
+        producer.onSensorChanged(accEvent)
+        verify { mOnNewWindow(any()) }
+
+        // Pass null as a listener to reset it
+        producer.setOnNewWindowListener(null)
+        producer.onSensorChanged(accEvent)
+        verify(atMost = 1) { mOnNewWindow(any()) }
+    }
+
+    @Test
     fun `constructor with unsupported sensors throws an exception`() {
         // Accelerometer not supported
         every { mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) } returns null
@@ -77,7 +104,7 @@ class SensorWindowProducerTest {
             SensorWindowProducer(
                 mContext,
                 mHandlerThread,
-                samplingMs, windowSize, mOnNewWindow
+                samplingMs, windowSize
             )
         }
 
@@ -88,7 +115,7 @@ class SensorWindowProducerTest {
             SensorWindowProducer(
                 mContext,
                 mHandlerThread,
-                samplingMs, windowSize, mOnNewWindow
+                samplingMs, windowSize
             )
         }
     }
@@ -98,8 +125,9 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize, mOnNewWindow
+            samplingMs, windowSize
         )
+        producer.setOnNewWindowListener(mOnNewWindow)
         assertThat(producer.isListening).isFalse()
 
         producer.startSensors()
@@ -116,8 +144,9 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize, mOnNewWindow
+            samplingMs, windowSize
         )
+        producer.setOnNewWindowListener(mOnNewWindow)
         assertThat(producer.isListening).isFalse()
         producer.startSensors()
         assertThat(producer.isListening).isTrue()
@@ -138,8 +167,9 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize, mOnNewWindow
+            samplingMs, windowSize
         )
+        producer.setOnNewWindowListener(mOnNewWindow)
         producer.startSensors()
         assertThat(producer.isListening).isTrue()
 
@@ -170,8 +200,9 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize, mOnNewWindow
+            samplingMs, windowSize
         )
+        producer.setOnNewWindowListener(mOnNewWindow)
         val accEvent = mockSensorEvent(mAccSensor)
         val gyroEvent = mockSensorEvent(mGyroSensor)
 
@@ -199,8 +230,9 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize, mOnNewWindow
+            samplingMs, windowSize
         )
+        producer.setOnNewWindowListener(mOnNewWindow)
         val accEvent = mockSensorEvent(mAccSensor)
         val gyroEvent = mockSensorEvent(mGyroSensor)
 
@@ -228,8 +260,9 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize, mOnNewWindow
+            samplingMs, windowSize
         )
+        producer.setOnNewWindowListener(mOnNewWindow)
         val accEvent = mockSensorEvent(mAccSensor)
         val gyroEvent = mockSensorEvent(mGyroSensor)
 

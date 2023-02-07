@@ -36,6 +36,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.6.0"
     implementation "com.google.android.material:material:1.7.0"
 
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
     testImplementation "io.mockk:mockk:$mockk_version"

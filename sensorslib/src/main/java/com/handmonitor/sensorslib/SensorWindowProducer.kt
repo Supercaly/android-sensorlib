@@ -8,7 +8,12 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
-import androidx.annotation.VisibleForTesting
+
+/**
+ * Callback invoked every time a new [SensorWindow]
+ * has been produced.
+ */
+typealias OnNewWindow = (SensorWindow) -> Unit
 
 /**
  * The class [SensorWindowProducer] implements the [SensorEventListener] callback
@@ -16,20 +21,32 @@ import androidx.annotation.VisibleForTesting
  * windows of sensor data.
  *
  * NOTE: This class collect the sensor data in his own thread that is managed
- * by the class. Be aware of race conditions!
+ * by this class. Be aware of race conditions!
+ * @see[setOnNewWindowListener]
  * @see[startSensors]
  * @see[stopSensors]
  */
 class SensorWindowProducer
-@VisibleForTesting
+/**
+ * Creates a new instance of [SensorWindowProducer].
+ *
+ * @param[context] An instance of [Context].
+ * @param[handlerThread] An instance of [HandlerThread] to use for sensor collection.
+ * @param[samplingMs] The sampling rate in milliseconds as a [Long].
+ * @param[windowSize] The processing window size as an [Int].
+ * @throws[SensorNotSupportedException] If some sensor is not supported.
+ */
 internal constructor(
     context: Context,
     private val handlerThread: HandlerThread,
     samplingMs: Long,
-    windowSize: Int,
-    private val onNewWindow: (SensorWindow) -> Unit,
+    windowSize: Int
 ) : SensorEventListener {
     companion object {
+        /**
+         * Constant string representing the default name of the thread used
+         * to handle sensor data collection.
+         */
         const val SENSOR_HANDLER_THREAD_NAME = "SensorWindowProducerThread"
         private const val TAG = "SensorWindowProducer"
     }
@@ -37,24 +54,24 @@ internal constructor(
     /**
      * Creates a new instance of [SensorWindowProducer].
      *
-     * @param[context] An instance of [Context] used to access the Android sensor service.
-     * @param[samplingMs] A [Long] value that specifies the sampling rate of the sensors.
-     * @param[windowSize] An [Int] value that specifies the size of the processing window.
-     * @param[onNewWindow] A callback that will be invoked when a new window of sensor data is produced.
+     * @param[context] An instance of [Context].
+     * @param[samplingMs] The sampling rate in milliseconds as a [Long].
+     * @param[windowSize] The processing window size as an [Int].
      * @throws[SensorNotSupportedException] If some sensor is not supported.
      */
     constructor(
         context: Context,
         samplingMs: Long,
-        windowSize: Int,
-        onNewWindow: (SensorWindow) -> Unit
+        windowSize: Int
     ) : this(
         context,
         HandlerThread(SENSOR_HANDLER_THREAD_NAME),
         samplingMs,
         windowSize,
-        onNewWindow
     )
+
+    // On new window listeners
+    private var mOnNewWindowListener: OnNewWindow? = null
 
     // Time constants converted in microseconds
     private val samplingPeriodUs: Int = samplingMs.msToUs().toInt()
@@ -92,11 +109,26 @@ internal constructor(
         get() = mIsListening
 
     /**
+     * Register a callback to be invoked when a new window is
+     * produced.
+     *
+     * @param[listener] Instance of [OnNewWindow]. Pass null to
+     * remove the previous one.
+     */
+    fun setOnNewWindowListener(listener: OnNewWindow?) {
+        mOnNewWindowListener = listener
+    }
+
+    /**
      * This method starts listening to sensor data in a separate thread
-     * producing window of data and calling [onNewWindow] every time one
+     * producing window of data and calling [OnNewWindow] every time one
      * is ready.
      *
+     * Before calling this make sure to set a listener using [setOnNewWindowListener]
+     * in order to receive all the windows when produced.
+     *
      * @throws[IllegalThreadStateException] If the thread is started and was already running.
+     * @see[setOnNewWindowListener]
      */
     fun startSensors() {
         if (mIsListening)
@@ -141,12 +173,13 @@ internal constructor(
         when (event?.sensor?.type) {
             Sensor.TYPE_ACCELEROMETER -> {
                 if (mAccFilter.newSample(event) && mWindowBuffer.pushAccelerometer(event.values)) {
-                    onNewWindow(mWindowBuffer.window)
+                    mOnNewWindowListener?.invoke(mWindowBuffer.window)
+
                 }
             }
             Sensor.TYPE_GYROSCOPE -> {
                 if (mGyroFilter.newSample(event) && mWindowBuffer.pushGyroscope(event.values)) {
-                    onNewWindow(mWindowBuffer.window)
+                    mOnNewWindowListener?.invoke(mWindowBuffer.window)
                 }
             }
             else -> {
