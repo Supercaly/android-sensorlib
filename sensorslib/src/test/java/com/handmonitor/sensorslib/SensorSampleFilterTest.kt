@@ -5,6 +5,7 @@ import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.concurrent.TimeUnit
 
 @ExtendWith(MockKExtension::class)
 class SensorSampleFilterTest {
@@ -35,7 +36,7 @@ class SensorSampleFilterTest {
         assertThat(sampler.lastTimeNs).isNotNull()
 
         // Accepts event with timestamp in range
-        var ts = mockTimestamp + sampler.minRangeNs + 1L.msToNs()
+        var ts = mockTimestamp + sampler.minRangeNs + TimeUnit.MILLISECONDS.toNanos(1L)
         var accepted = sampler.newSample(mockSensorEvent(timestamp = ts))
         assertThat(accepted).isTrue()
         assertThat(sampler.lastTimeNs).isEqualTo(ts)
@@ -47,7 +48,7 @@ class SensorSampleFilterTest {
         assertThat(sampler.lastTimeNs).isEqualTo(ts)
 
         // Accepts event with timestamp equal to maxRange
-        ts += sampler.maxRangeNs + 10L.msToNs()
+        ts += sampler.maxRangeNs + TimeUnit.MILLISECONDS.toNanos(10L)
         accepted = sampler.newSample(mockSensorEvent(timestamp = ts))
         assertThat(accepted).isTrue()
         assertThat(sampler.lastTimeNs).isEqualTo(ts)
@@ -65,7 +66,7 @@ class SensorSampleFilterTest {
         sampler.newSample(mockSensorEvent(timestamp = mockTimestamp))
         assertThat(sampler.lastTimeNs).isNotNull()
 
-        val ts = mockTimestamp + sampler.minRangeNs - 2L.msToNs()
+        val ts = mockTimestamp + sampler.minRangeNs - TimeUnit.MILLISECONDS.toNanos(2L)
         val accepted = sampler.newSample(mockSensorEvent(timestamp = ts))
         assertThat(accepted).isFalse()
         assertThat(sampler.lastTimeNs).isEqualTo(mockTimestamp)
@@ -88,7 +89,7 @@ class SensorSampleFilterTest {
         sampler.newSample(mockSensorEvent(timestamp = mockTimestamp))
         assertThat(sampler.lastTimeNs).isNotNull()
 
-        val ts = mockTimestamp - 10L.msToNs()
+        val ts = mockTimestamp - TimeUnit.MILLISECONDS.toNanos(10L)
         val accepted = sampler.newSample(mockSensorEvent(timestamp = ts))
         assertThat(accepted).isFalse()
         assertThat(sampler.lastTimeNs).isEqualTo(mockTimestamp)

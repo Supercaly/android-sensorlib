@@ -2,6 +2,7 @@ package com.handmonitor.sensorslib
 
 import android.hardware.SensorEvent
 import android.util.Log
+import java.util.concurrent.TimeUnit
 
 /**
  * A [SensorSampleFilter] is a class that helps during the process
@@ -27,12 +28,12 @@ class SensorSampleFilter(samplingMs: Long) {
     /**
      * Denotes the lower extreme of the sampling range.
      */
-    val minRangeNs: Long = samplingMs.msToNs() - SAMPLING_RANGE_NS
+    val minRangeNs: Long = TimeUnit.MILLISECONDS.toNanos(samplingMs) - SAMPLING_RANGE_NS
 
     /**
      * Denotes the upper extreme of the sampling range.
      */
-    val maxRangeNs: Long = samplingMs.msToNs() + SAMPLING_RANGE_NS
+    val maxRangeNs: Long = TimeUnit.MILLISECONDS.toNanos(samplingMs) + SAMPLING_RANGE_NS
 
     /**
      * Return the last accepted timestamp in nanoseconds.

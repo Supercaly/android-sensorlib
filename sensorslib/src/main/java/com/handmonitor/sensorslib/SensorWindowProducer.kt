@@ -8,6 +8,7 @@ import android.hardware.SensorManager
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import java.util.concurrent.TimeUnit
 
 /**
  * Callback invoked every time a new [SensorWindow]
@@ -74,8 +75,9 @@ internal constructor(
     private var mOnNewWindowListener: OnNewWindow? = null
 
     // Time constants converted in microseconds
-    private val samplingPeriodUs: Int = samplingMs.msToUs().toInt()
-    private val maxLatencyUs: Int = (samplingMs * windowSize).msToUs().toInt()
+    private val samplingPeriodUs: Int = TimeUnit.MILLISECONDS.toMicros(samplingMs).toInt()
+    private val maxLatencyUs: Int =
+        TimeUnit.MILLISECONDS.toMicros((samplingMs * windowSize)).toInt()
 
     // Sensor manager and sensors
     private val mSensorManager: SensorManager
