@@ -11,8 +11,8 @@ package com.handmonitor.sensorslib
  * internal buffer will have a size of windowSize * 6.
  */
 class SensorWindowBuffer(windowSize: Int) {
-    private val mBufferSize: Int = windowSize * 6
-    private val mBuffer: FloatArray = FloatArray(mBufferSize) { 0.0f }
+    private val mBufferCapacity: Int = windowSize * 6
+    private val mBuffer: FloatArray = FloatArray(mBufferCapacity) { 0.0f }
     private var mAccIndex: Int = 0
     private var mGyroIndex: Int = 0
 
@@ -31,11 +31,13 @@ class SensorWindowBuffer(windowSize: Int) {
      * @return true if the window is full, false otherwise.
      */
     fun pushAccelerometer(values: FloatArray): Boolean {
-        mBuffer[mAccIndex + 0] = values[0]
-        mBuffer[mAccIndex + 1] = values[1]
-        mBuffer[mAccIndex + 2] = values[2]
-        mAccIndex += 6
-        if (mAccIndex >= mBufferSize || mGyroIndex >= mBufferSize) {
+        if (mAccIndex < mBufferCapacity) {
+            mBuffer[mAccIndex + 0] = values[0]
+            mBuffer[mAccIndex + 1] = values[1]
+            mBuffer[mAccIndex + 2] = values[2]
+            mAccIndex += 6
+        }
+        if (mAccIndex >= mBufferCapacity && mGyroIndex >= mBufferCapacity) {
             mAccIndex = 0
             mGyroIndex = 0
             return true
@@ -52,11 +54,13 @@ class SensorWindowBuffer(windowSize: Int) {
      * @return true if the window is full, false otherwise.
      */
     fun pushGyroscope(values: FloatArray): Boolean {
-        mBuffer[mGyroIndex + 3] = values[0]
-        mBuffer[mGyroIndex + 4] = values[1]
-        mBuffer[mGyroIndex + 5] = values[2]
-        mGyroIndex += 6
-        if (mAccIndex >= mBufferSize || mGyroIndex >= mBufferSize) {
+        if (mGyroIndex < mBufferCapacity) {
+            mBuffer[mGyroIndex + 3] = values[0]
+            mBuffer[mGyroIndex + 4] = values[1]
+            mBuffer[mGyroIndex + 5] = values[2]
+            mGyroIndex += 6
+        }
+        if (mAccIndex >= mBufferCapacity && mGyroIndex >= mBufferCapacity) {
             mAccIndex = 0
             mGyroIndex = 0
             return true

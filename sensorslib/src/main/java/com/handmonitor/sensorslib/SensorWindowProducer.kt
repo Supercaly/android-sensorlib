@@ -87,8 +87,8 @@ internal constructor(
 
     // Sensor collection stuff
     private val mWindowBuffer = SensorWindowBuffer(windowSize)
-    private val mAccFilter = SensorSampleFilter(samplingMs)
-    private val mGyroFilter = SensorSampleFilter(samplingMs)
+    private val mAccFilter = SensorSampleFilter(samplingMs, "accelerometer")
+    private val mGyroFilter = SensorSampleFilter(samplingMs, "gyroscope")
 
     init {
         mSensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager

@@ -12,6 +12,7 @@ class SensorSampleFilterTest {
     companion object {
         private const val samplingMs = 20L
         private const val mockTimestamp = 314159265358979000L
+        private const val sensorName = "test-sensor"
     }
 
     @BeforeEach
@@ -21,7 +22,7 @@ class SensorSampleFilterTest {
 
     @Test
     fun `newSample discards the first event but set lastTimeNs`() {
-        val sampler = SensorSampleFilter(samplingMs)
+        val sampler = SensorSampleFilter(samplingMs, sensorName)
         assertThat(sampler.lastTimeNs).isNull()
 
         val accept = sampler.newSample(mockSensorEvent(timestamp = mockTimestamp))
@@ -31,7 +32,7 @@ class SensorSampleFilterTest {
 
     @Test
     fun `newSample accepts events`() {
-        val sampler = SensorSampleFilter(samplingMs)
+        val sampler = SensorSampleFilter(samplingMs, sensorName)
         sampler.newSample(mockSensorEvent(timestamp = mockTimestamp))
         assertThat(sampler.lastTimeNs).isNotNull()
 
@@ -62,7 +63,7 @@ class SensorSampleFilterTest {
 
     @Test
     fun `newSample discards event with timestamp lower than minRange`() {
-        val sampler = SensorSampleFilter(samplingMs)
+        val sampler = SensorSampleFilter(samplingMs, sensorName)
         sampler.newSample(mockSensorEvent(timestamp = mockTimestamp))
         assertThat(sampler.lastTimeNs).isNotNull()
 
@@ -74,7 +75,7 @@ class SensorSampleFilterTest {
 
     @Test
     fun `newSample discards event with same timestamp as the last`() {
-        val sampler = SensorSampleFilter(samplingMs)
+        val sampler = SensorSampleFilter(samplingMs, sensorName)
         sampler.newSample(mockSensorEvent(timestamp = mockTimestamp))
         assertThat(sampler.lastTimeNs).isNotNull()
 
@@ -85,7 +86,7 @@ class SensorSampleFilterTest {
 
     @Test
     fun `newSample discards event with timestamp older than the last`() {
-        val sampler = SensorSampleFilter(samplingMs)
+        val sampler = SensorSampleFilter(samplingMs, sensorName)
         sampler.newSample(mockSensorEvent(timestamp = mockTimestamp))
         assertThat(sampler.lastTimeNs).isNotNull()
 

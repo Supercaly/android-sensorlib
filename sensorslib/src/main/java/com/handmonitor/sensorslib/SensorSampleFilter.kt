@@ -11,7 +11,10 @@ import java.util.concurrent.TimeUnit
  *
  * @param[samplingMs] The sampling period in milliseconds.
  */
-class SensorSampleFilter(samplingMs: Long) {
+class SensorSampleFilter(
+    samplingMs: Long,
+    private val sensorName: String = "unknown"
+) {
     companion object {
         /**
          * Determines the range of acceptance of a [SensorEvent] in
@@ -58,7 +61,7 @@ class SensorSampleFilter(samplingMs: Long) {
 
         val elapsed = event.timestamp - mLastTimeUs!!
         if (elapsed < minRangeNs) {
-            Log.d(TAG, "newSample: got event with elapsed time '${elapsed}ns'")
+            Log.d(TAG, "newSample: got $sensorName event with elapsed time '${elapsed}ns'")
             return false
         }
         mLastTimeUs = event.timestamp
