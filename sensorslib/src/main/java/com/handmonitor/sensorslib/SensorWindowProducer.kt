@@ -176,7 +176,6 @@ internal constructor(
             Sensor.TYPE_ACCELEROMETER -> {
                 if (mAccFilter.newSample(event) && mWindowBuffer.pushAccelerometer(event.values)) {
                     mOnNewWindowListener?.invoke(mWindowBuffer.window)
-
                 }
             }
             Sensor.TYPE_GYROSCOPE -> {
