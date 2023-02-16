@@ -32,13 +32,12 @@ android {
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:$core_ktx_version"
-    implementation "androidx.appcompat:appcompat:1.6.1"
-    implementation "com.google.android.material:material:1.8.0"
+    implementation libs.core
+    implementation libs.coroutines.android
+    testImplementation libs.coroutines.test
 
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_version"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
-    testImplementation "io.mockk:mockk:$mockk_version"
-    testImplementation "com.google.truth:truth:$truth_version"
+    testImplementation libs.junit.api
+    testRuntimeOnly libs.junit.engine
+    testImplementation libs.mockk
+    testImplementation libs.truth
 }
