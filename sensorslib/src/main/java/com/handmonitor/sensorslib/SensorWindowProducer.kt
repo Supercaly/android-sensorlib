@@ -68,7 +68,7 @@ internal constructor(
         context,
         HandlerThread(SENSOR_HANDLER_THREAD_NAME),
         samplingMs,
-        windowSize,
+        windowSize
     )
 
     // On new window listeners
@@ -133,8 +133,9 @@ internal constructor(
      * @see[setOnNewWindowListener]
      */
     fun startSensors() {
-        if (mIsListening)
+        if (mIsListening) {
             throw IllegalThreadStateException("thread is already running")
+        }
 
         mIsListening = true
         handlerThread.start()

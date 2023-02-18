@@ -79,7 +79,8 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize
+            samplingMs,
+            windowSize
         )
         val accEvent = mockSensorEvent(mAccSensor)
         producer.onSensorChanged(accEvent)
@@ -104,7 +105,8 @@ class SensorWindowProducerTest {
             SensorWindowProducer(
                 mContext,
                 mHandlerThread,
-                samplingMs, windowSize
+                samplingMs,
+                windowSize
             )
         }
 
@@ -115,7 +117,8 @@ class SensorWindowProducerTest {
             SensorWindowProducer(
                 mContext,
                 mHandlerThread,
-                samplingMs, windowSize
+                samplingMs,
+                windowSize
             )
         }
     }
@@ -125,7 +128,8 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize
+            samplingMs,
+            windowSize
         )
         producer.setOnNewWindowListener(mOnNewWindow)
         assertThat(producer.isListening).isFalse()
@@ -144,7 +148,8 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize
+            samplingMs,
+            windowSize
         )
         producer.setOnNewWindowListener(mOnNewWindow)
         assertThat(producer.isListening).isFalse()
@@ -167,7 +172,8 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize
+            samplingMs,
+            windowSize
         )
         producer.setOnNewWindowListener(mOnNewWindow)
         producer.startSensors()
@@ -200,7 +206,8 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize
+            samplingMs,
+            windowSize
         )
         producer.setOnNewWindowListener(mOnNewWindow)
         val accEvent = mockSensorEvent(mAccSensor)
@@ -230,7 +237,8 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize
+            samplingMs,
+            windowSize
         )
         producer.setOnNewWindowListener(mOnNewWindow)
         val accEvent = mockSensorEvent(mAccSensor)
@@ -260,7 +268,8 @@ class SensorWindowProducerTest {
         val producer = SensorWindowProducer(
             mContext,
             mHandlerThread,
-            samplingMs, windowSize
+            samplingMs,
+            windowSize
         )
         producer.setOnNewWindowListener(mOnNewWindow)
         val accEvent = mockSensorEvent(mAccSensor)
