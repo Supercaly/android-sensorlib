@@ -1,4 +1,4 @@
-package com.handmonitor.sensorslib
+package com.handmonitor.sensorlib
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.Runs
