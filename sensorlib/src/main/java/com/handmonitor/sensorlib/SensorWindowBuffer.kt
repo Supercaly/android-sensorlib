@@ -1,4 +1,4 @@
-package com.handmonitor.sensorslib
+package com.handmonitor.sensorlib
 
 /**
  * The class [SensorWindowBuffer] is a buffer for sensor

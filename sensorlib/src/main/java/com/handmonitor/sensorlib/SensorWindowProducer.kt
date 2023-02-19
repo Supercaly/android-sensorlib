@@ -1,4 +1,4 @@
-package com.handmonitor.sensorslib
+package com.handmonitor.sensorlib
 
 import android.content.Context
 import android.hardware.Sensor
