@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
  *
  * @param[samplingMs] The sampling period in milliseconds.
  */
-class SensorSampleFilter(
+internal class SensorSampleFilter(
     samplingMs: Long,
     private val sensorName: String = "unknown"
 ) {

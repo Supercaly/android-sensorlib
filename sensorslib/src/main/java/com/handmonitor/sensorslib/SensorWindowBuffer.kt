@@ -10,7 +10,7 @@ package com.handmonitor.sensorslib
  * @param[windowSize] The size of the processing window; the
  * internal buffer will have a size of windowSize * 6.
  */
-class SensorWindowBuffer(windowSize: Int) {
+internal class SensorWindowBuffer(windowSize: Int) {
     private val mBufferCapacity: Int = windowSize * 6
     private val mBuffer: FloatArray = FloatArray(mBufferCapacity) { 0.0f }
     private var mAccIndex: Int = 0
