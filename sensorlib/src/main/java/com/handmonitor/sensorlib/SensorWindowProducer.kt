@@ -102,12 +102,12 @@ internal constructor(
             throw SensorNotSupportedException(Sensor.TYPE_GYROSCOPE)
         }
         Log.d(
-            TAG, "init: accelerometer batch FIFO ${mAccSensor!!.fifoReservedEventCount}/" +
-                    "${mAccSensor!!.fifoMaxEventCount}"
+            TAG,
+            "init: accelerometer batch FIFO ${mAccSensor!!.fifoReservedEventCount}/${mAccSensor!!.fifoMaxEventCount}"
         )
         Log.d(
-            TAG, "init: gyroscope batch FIFO ${mGyroSensor!!.fifoReservedEventCount}/" +
-                    "${mGyroSensor!!.fifoMaxEventCount}"
+            TAG,
+            "init: gyroscope batch FIFO ${mGyroSensor!!.fifoReservedEventCount}/${mGyroSensor!!.fifoMaxEventCount}"
         )
     }
 
