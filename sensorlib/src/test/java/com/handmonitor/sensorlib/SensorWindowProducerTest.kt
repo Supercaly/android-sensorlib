@@ -63,7 +63,11 @@ class SensorWindowProducerTest {
         every { mHandlerThread.looper } returns mLooper
 
         every { mAccSensor.type } returns Sensor.TYPE_ACCELEROMETER
+        every { mAccSensor.fifoMaxEventCount } returns 0
+        every { mAccSensor.fifoReservedEventCount } returns 0
         every { mGyroSensor.type } returns Sensor.TYPE_GYROSCOPE
+        every { mGyroSensor.fifoMaxEventCount } returns 0
+        every { mGyroSensor.fifoReservedEventCount } returns 0
 
         every { mOnNewWindow.invoke(any()) } just Runs
     }
