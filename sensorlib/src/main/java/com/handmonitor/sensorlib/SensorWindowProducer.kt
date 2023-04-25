@@ -101,6 +101,14 @@ internal constructor(
         if (mGyroSensor == null) {
             throw SensorNotSupportedException(Sensor.TYPE_GYROSCOPE)
         }
+        Log.d(
+            TAG, "init: accelerometer batch FIFO ${mAccSensor!!.fifoReservedEventCount}/" +
+                    "${mAccSensor!!.fifoMaxEventCount}"
+        )
+        Log.d(
+            TAG, "init: gyroscope batch FIFO ${mGyroSensor!!.fifoReservedEventCount}/" +
+                    "${mGyroSensor!!.fifoMaxEventCount}"
+        )
     }
 
     /**
@@ -179,11 +187,13 @@ internal constructor(
                     mOnNewWindowListener?.invoke(mWindowBuffer.window)
                 }
             }
+
             Sensor.TYPE_GYROSCOPE -> {
                 if (mGyroFilter.newSample(event) && mWindowBuffer.pushGyroscope(event.values)) {
                     mOnNewWindowListener?.invoke(mWindowBuffer.window)
                 }
             }
+
             else -> {
                 Log.w(TAG, "onSensorChanged: Unknown sensor type ${event?.sensor?.type}")
             }
