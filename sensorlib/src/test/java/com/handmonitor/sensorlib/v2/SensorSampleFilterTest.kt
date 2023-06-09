@@ -1,6 +1,8 @@
-package com.handmonitor.sensorlib
+package com.handmonitor.sensorlib.v2
 
 import com.google.common.truth.Truth.assertThat
+import com.handmonitor.sensorlib.mockLog
+import com.handmonitor.sensorlib.mockSensorEvent
 import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

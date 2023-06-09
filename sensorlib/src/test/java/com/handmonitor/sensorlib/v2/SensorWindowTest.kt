@@ -1,4 +1,4 @@
-package com.handmonitor.sensorlib
+package com.handmonitor.sensorlib.v2
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.Test

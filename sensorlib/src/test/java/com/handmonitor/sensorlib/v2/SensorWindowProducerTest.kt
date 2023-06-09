@@ -1,4 +1,4 @@
-package com.handmonitor.sensorlib
+package com.handmonitor.sensorlib.v2
 
 import android.content.Context
 import android.hardware.Sensor
@@ -7,6 +7,8 @@ import android.hardware.SensorManager
 import android.os.HandlerThread
 import android.os.Looper
 import com.google.common.truth.Truth.assertThat
+import com.handmonitor.sensorlib.mockLog
+import com.handmonitor.sensorlib.mockSensorEvent
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
