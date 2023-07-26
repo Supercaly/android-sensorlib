@@ -3,6 +3,7 @@ package com.handmonitor.sensorlib.v3.internal
 import android.hardware.Sensor
 import com.google.common.truth.Truth.assertThat
 import com.handmonitor.sensorlib.mockLog
+import com.handmonitor.sensorlib.v3.toNs
 import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.count
@@ -11,9 +12,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import com.handmonitor.sensorlib.v3.toNs
+import org.junit.jupiter.api.Test
 
 @ExtendWith(MockKExtension::class)
 class FilterSamplesTest {

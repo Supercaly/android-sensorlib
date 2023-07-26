@@ -36,4 +36,4 @@ fun SensorWindowProducer.asFlow(): Flow<SensorWindow> = callbackFlow {
     }
     startSensors()
     awaitClose { stopSensors() }
-}.conflate().flowOn(Dispatchers.Default)
+}.flowOn(Dispatchers.Default)
