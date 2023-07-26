@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
 class FilterSamplesTest {
