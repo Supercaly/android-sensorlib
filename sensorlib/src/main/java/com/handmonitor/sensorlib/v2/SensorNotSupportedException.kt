@@ -1,4 +1,4 @@
-package com.handmonitor.sensorlib
+package com.handmonitor.sensorlib.v2
 
 /**
  * Thrown when the requested sensor is not supported by the device.

@@ -1,4 +1,4 @@
-package com.handmonitor.sensorlib
+package com.handmonitor.sensorlib.v2
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -36,4 +36,4 @@ fun SensorWindowProducer.asFlow(): Flow<SensorWindow> = callbackFlow {
     }
     startSensors()
     awaitClose { stopSensors() }
-}.conflate().flowOn(Dispatchers.Default)
+}.flowOn(Dispatchers.Default)
