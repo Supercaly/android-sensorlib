@@ -135,12 +135,14 @@ internal class SensorSharedDataImpl(samplingWindowSize: Int) {
      * @return true if the underlying window is full, false otherwise.
      */
     fun appendAcc(acc: SensorSample): Boolean {
-        mWindowData[mAccIdx + 0] = acc.x
-        mWindowData[mAccIdx + 1] = acc.y
-        mWindowData[mAccIdx + 2] = acc.z
-        mAccIdx += 6
+        if (mAccIdx < mWindowLength) {
+            mWindowData[mAccIdx + 0] = acc.x
+            mWindowData[mAccIdx + 1] = acc.y
+            mWindowData[mAccIdx + 2] = acc.z
+            mAccIdx += 6
+        }
 
-        if (mAccIdx >= mWindowLength || mGyroIdx >= mWindowLength) {
+        if (mAccIdx >= mWindowLength && mGyroIdx >= mWindowLength) {
             mAccIdx = 0
             mGyroIdx = 0
             return true
@@ -154,12 +156,13 @@ internal class SensorSharedDataImpl(samplingWindowSize: Int) {
      * @return true if the underlying window is full, false otherwise.
      */
     fun appendGyro(gyro: SensorSample): Boolean {
-        mWindowData[mGyroIdx + 3] = gyro.x
-        mWindowData[mGyroIdx + 4] = gyro.y
-        mWindowData[mGyroIdx + 5] = gyro.z
-        mGyroIdx += 6
-
-        if (mAccIdx >= mWindowLength || mGyroIdx >= mWindowLength) {
+        if (mGyroIdx < mWindowLength) {
+            mWindowData[mGyroIdx + 3] = gyro.x
+            mWindowData[mGyroIdx + 4] = gyro.y
+            mWindowData[mGyroIdx + 5] = gyro.z
+            mGyroIdx += 6
+        }
+        if (mAccIdx >= mWindowLength && mGyroIdx >= mWindowLength) {
             mAccIdx = 0
             mGyroIdx = 0
             return true
