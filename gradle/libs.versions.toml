@@ -5,20 +5,20 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-appcompat = "1.6.1"
-material = "1.10.0"
+appcompat = "1.7.0"
+material = "1.12.0"
 
-playServicesWearable = "18.0.0"
-composeBom = "2024.04.01"
-composeMaterial = "1.2.1"
-composeFoundation = "1.2.1"
-activityCompose = "1.7.2"
+playServicesWearable = "18.2.0"
+composeBom = "2024.06.00"
+composeMaterial = "1.3.1"
+composeFoundation = "1.3.1"
+activityCompose = "1.9.0"
 coreSplashscreen = "1.0.1"
-tiles = "1.1.0"
-tilesMaterial = "1.1.0"
+tiles = "1.3.0"
+tilesMaterial = "1.3.0"
 horologistComposeTools = "0.4.8"
 horologistTiles = "0.4.8"
-watchfaceComplicationsDataSourceKtx = "1.1.1"
+watchfaceComplicationsDataSourceKtx = "1.2.1"
 
 mockk = '1.13.5'
 truth = '1.1.5'
@@ -59,7 +59,3 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = 'com.android.library', version.ref = 'agp' }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 junit5 = { id = 'de.mannodermaus.android-junit5', version.ref = 'junit5_plugin' }
-
-#ktlintPlugin = { id = 'org.jlleitschuh.gradle.ktlint', version.ref = 'ktlint_plugin' }
-#versionsPlugin = { id = 'com.github.ben-manes.versions', version.ref = 'versions_plugin' }
-#kspPlugin = { id = 'com.google.devtools.ksp', version.ref = 'ksp_plugin' }
