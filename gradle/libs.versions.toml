@@ -1,0 +1,65 @@
+[versions]
+agp = "8.5.0"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+appcompat = "1.6.1"
+material = "1.10.0"
+
+playServicesWearable = "18.0.0"
+composeBom = "2024.04.01"
+composeMaterial = "1.2.1"
+composeFoundation = "1.2.1"
+activityCompose = "1.7.2"
+coreSplashscreen = "1.0.1"
+tiles = "1.1.0"
+tilesMaterial = "1.1.0"
+horologistComposeTools = "0.4.8"
+horologistTiles = "0.4.8"
+watchfaceComplicationsDataSourceKtx = "1.1.1"
+
+mockk = '1.13.5'
+truth = '1.1.5'
+junit5_plugin = '1.8.2.1'
+junit5 = '5.10.0'
+coroutines_test = '1.7.3'
+
+[libraries]
+play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+ui = { group = "androidx.compose.ui", name = "ui" }
+ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
+compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "composeFoundation" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+tiles = { group = "androidx.wear.tiles", name = "tiles", version.ref = "tiles" }
+tiles-material = { group = "androidx.wear.tiles", name = "tiles-material", version.ref = "tilesMaterial" }
+horologist-compose-tools = { group = "com.google.android.horologist", name = "horologist-compose-tools", version.ref = "horologistComposeTools" }
+horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "horologistTiles" }
+watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+mockk = { module = 'io.mockk:mockk', version.ref = 'mockk' }
+truth = { module = 'com.google.truth:truth', version.ref = 'truth' }
+junit-api = { module = 'org.junit.jupiter:junit-jupiter-api', version.ref = 'junit5' }
+junit-engine = { module = 'org.junit.jupiter:junit-jupiter-engine', version.ref = 'junit5' }
+coroutines-test = { module = 'org.jetbrains.kotlinx:kotlinx-coroutines-test', version.ref = 'coroutines_test' }
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = 'com.android.library', version.ref = 'agp' }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+junit5 = { id = 'de.mannodermaus.android-junit5', version.ref = 'junit5_plugin' }
+
+#ktlintPlugin = { id = 'org.jlleitschuh.gradle.ktlint', version.ref = 'ktlint_plugin' }
+#versionsPlugin = { id = 'com.github.ben-manes.versions', version.ref = 'versions_plugin' }
+#kspPlugin = { id = 'com.google.devtools.ksp', version.ref = 'ksp_plugin' }
