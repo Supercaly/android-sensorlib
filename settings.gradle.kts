@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "SensorLib"
-include(":app")
+include(":example")
 include(":sensorlib")
